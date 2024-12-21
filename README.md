@@ -1,6 +1,31 @@
 # nvim-django-shell
 
-## Structure
+## Install
+If you are using Lazy nvim
+```lua
+{
+	"shtayeb/nvim-django-shell",
+	opts = {},
+}
+```
+
+## Todo:
+### Django Shell
+Run django code and return the result in a new vertical/horizontal buffer
+	- [x] Get the code from the current buffer
+	- [] Execute the code in django
+	- [] set a django project home var, for access to manage.py
+	- [] Put the result in a new buffer
+	- [] syntax highlight the result
+	- [] config var for customisability
+
+### Django Commands
+List, show help and examples for django commands in telescope prompt.
+	- [] Get the commands
+	- [] Send the to telescope and other telescope configs
+	- [] Run the command and return the resutl (LOW)
+
+## Plugin Structure
 ```
 ├───lua
 │   └───django-shell
@@ -14,4 +39,3 @@
 
 `plugin/`
 - The files inside this directory will be executed when Neovim starts.
-
