@@ -39,10 +39,37 @@ M.exec_django_code = function(code)
 	return code
 end
 
+local function find_manage_py(cwd)
+	-- local manage_py = vim.fn.findfile("manage.py", cwd .. ";") -- Recursively search
+	-- local manage_py = vim.fn.findfile("manage.py", cwd .. "/*")
+
+	-- Check if manage.py exists in the current directory
+	local manage_py_in_cwd = cwd .. "/manage.py"
+	if vim.fn.filereadable(manage_py_in_cwd) == 1 then
+		return manage_py_in_cwd
+	end
+
+	-- Check for manage.py one level down
+	local subdirs = vim.fn.glob(cwd .. "/*", true, true) -- List all files and directories in cwd
+	for _, subdir in ipairs(subdirs) do
+		if vim.fn.isdirectory(subdir) == 1 then
+			local manage_py_in_subdir = subdir .. "/manage.py"
+			if vim.fn.filereadable(manage_py_in_subdir) == 1 then
+				return manage_py_in_subdir
+			end
+		end
+	end
+
+	return nil
+end
+
 function M.setup(opts)
 	opts = opts or {}
 
 	vim.keymap.set("n", "<space>tr", function()
+		-- current working directory
+		-- local cwd = vim.fn.getcwd()
+
 		-- the all text in the current buffer till the cursor position
 		local curr_buf = vim.api.nvim_get_current_buf()
 		local cursor_position = vim.api.nvim_win_get_cursor(0) -- 0 -> current window
@@ -69,6 +96,13 @@ function M.setup(opts)
 
 	-- TODO: get the available django commands and display it in a telescope search prompt
 	vim.keymap.set("n", "<space>tb", function()
+		-- current working directory
+		local cwd = vim.fn.getcwd()
+		local manage_py = find_manage_py(cwd)
+
+		print(cwd)
+		print(manage_py)
+
 		vim.cmd.vnew()
 		vim.cmd.term()
 		vim.cmd.wincmd("J")
@@ -77,7 +111,7 @@ function M.setup(opts)
 		local job_id = vim.bo.channel
 
 		vim.fn.chansend(job_id, {
-			"python 'C:\\Users\\shahr\\Music\\4 - Django\\rh\\src\\manage.py' shell --command \"print('hello from django')\" \r\n",
+			cwd .. ".venv/bin/python " .. manage_py .. " shell --command \"print('hello from django')\" \r\n",
 		})
 	end)
 end
