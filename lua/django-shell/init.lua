@@ -90,18 +90,22 @@ function M.setup(opts)
 		vim.api.nvim_buf_set_lines(0, 0, 0, false, res)
 	end)
 
+	-- TODO: get the available django commands and display it in a telescope search prompt
 	vim.keymap.set("n", "<space>tc", function()
 		M.show_django_cmds()
 	end)
 
-	-- TODO: get the available django commands and display it in a telescope search prompt
 	vim.keymap.set("n", "<space>tb", function()
 		-- current working directory
 		local cwd = vim.fn.getcwd()
 		local manage_py = find_manage_py(cwd)
 
-		print(cwd)
-		print(manage_py)
+		-- the all text in the current buffer till the cursor position
+		local curr_buf = vim.api.nvim_get_current_buf()
+		local cursor_position = vim.api.nvim_win_get_cursor(0) -- 0 -> current window
+
+		local code = vim.api.nvim_buf_get_lines(curr_buf, 0, cursor_position[1], false)
+		local code_str = table.concat(code, ";")
 
 		vim.cmd.vnew()
 		vim.cmd.term()
@@ -111,7 +115,7 @@ function M.setup(opts)
 		local job_id = vim.bo.channel
 
 		vim.fn.chansend(job_id, {
-			cwd .. ".venv/bin/python " .. manage_py .. " shell --command \"print('hello from django')\" \r\n",
+			cwd .. "/.venv/bin/python " .. manage_py .. " shell --command '" .. code_str .. "'\r\n",
 		})
 	end)
 end
