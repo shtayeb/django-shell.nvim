@@ -12,13 +12,15 @@ If you are using Lazy nvim
 ## Todo:
 ### Django Shell
 Run django code and return the result in a new vertical/horizontal buffer
+- [] fix: when buffer is closed next execute does not make it visible
+- [] set tests
 - [x] Get the code from the current buffer
 - [x] Execute the code in django
-	- [] handle the windows path errors
+	- [x] handle the windows path errors
 - [x] set a django project home var, for access to manage.py
 - [x] Put the result in a new buffer
-- [] reuse the same buffer for subsequent queries and replace the contents
-- [] syntax highlight the result
+- [x] reuse the same buffer for subsequent queries and replace the contents
+- [x] syntax highlight the result
 - [] config var for customisability
 
 ### Django Commands
