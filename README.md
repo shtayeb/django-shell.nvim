@@ -13,9 +13,11 @@ If you are using Lazy nvim
 ### Django Shell
 Run django code and return the result in a new vertical/horizontal buffer
 - [x] Get the code from the current buffer
-- [] Execute the code in django
-- [] set a django project home var, for access to manage.py
-- [] Put the result in a new buffer
+- [x] Execute the code in django
+	- [] handle the windows path errors
+- [x] set a django project home var, for access to manage.py
+- [x] Put the result in a new buffer
+- [] reuse the same buffer for subsequent queries and replace the contents
 - [] syntax highlight the result
 - [] config var for customisability
 

@@ -64,9 +64,20 @@ function M.setup(opts)
 		local code = vim.api.nvim_buf_get_lines(curr_buf, 0, cursor_position[1], false)
 
 		local result = M.exec_django_code(cwd, manage_py, code)
-		-- print(result)
 
-		vim.cmd.vnew("results")
+		-- print(result)
+		local winnr = vim.fn.win_findbuf("results")[1]
+		if winnr == -1 then
+			vim.cmd.vnew("results")
+			winnr = vim.fn.winnr()
+			M.results_winnr = winnr
+			M.results_bufnr = vim.fn.bufnr("results")
+		else
+			vim.cmd.buffer("results")
+			M.results_winnr = winnr
+			M.results_bufnr = vim.fn.bufnr("results")
+		end
+
 		-- syntax highlight the results
 		vim.api.nvim_buf_set_lines(0, 0, 0, false, vim.split(result, "\n"))
 	end)
