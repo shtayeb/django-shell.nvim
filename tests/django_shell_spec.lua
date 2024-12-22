@@ -1,0 +1,5 @@
+describe("django-shell", function()
+	it("can be required", function()
+		require("django-shell")
+	end)
+end)

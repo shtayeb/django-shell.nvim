@@ -6,13 +6,35 @@ If you are using Lazy nvim
 {
 	"shtayeb/nvim-django-shell",
 	opts = {},
+	dependencies = { 
+		"nvim-telescope/telescope.nvim",
+		"nvim-lua/plenary.nvim" 
+	}
 }
+```
+
+## Development
+clone the repo
+```shell
+git clone https://github.com/shtayeb/nvim-django-shell.git
+```
+include the plugin locally using lazy.nvim
+```lua
+{
+	dir = "path/to/nvim-django-shell",
+	opts = {},
+}
+```
+
+run current test file
+```shell
+:PlenaryBustedFile %
 ```
 
 ## Todo:
 ### Django Shell
 Run django code and return the result in a new vertical/horizontal buffer
-- [] fix: when buffer is closed next execute does not make it visible
+- [] fix: when buffer is closed, next execute does not make it visible
 - [] set tests
 - [x] Get the code from the current buffer
 - [x] Execute the code in django

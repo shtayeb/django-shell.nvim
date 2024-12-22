@@ -1,0 +1,6 @@
+================================================================================
+                                                               *nvim-django-shell*
+
+Django shell and commands helper for neovim.
+
+ vim:tw=78:ts=8:ft=help:norl:
