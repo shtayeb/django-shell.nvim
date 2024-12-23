@@ -16,6 +16,7 @@ If you are using Lazy nvim
 ```
 
 ## Usage
+> [!IMPORTANT]
 > **Assumptions:** 
 > - Python virtual environment set up in the current working directory and it is named `.venv`.
 > - Ensure your `manage.py` file is in the current working directory or one level down.
