@@ -10,7 +10,7 @@ local log = require("plenary.log"):new()
 log.level = "debug"
 
 local M = {}
-
+M.result_winnr = -1
 M.result_bufnr = -1
 M.cwd = vim.fn.getcwd()
 
@@ -85,13 +85,18 @@ function M.setup(opts)
 
 		local code = vim.api.nvim_buf_get_lines(curr_buf, 0, cursor_position[1], false)
 
-		if M.result_bufnr == -1 then
-			vim.cmd.vnew()
-			M.result_bufnr = vim.api.nvim_get_current_buf()
+		if not vim.api.nvim_buf_is_valid(M.result_bufnr) then
+			M.result_bufnr = vim.api.nvim_create_buf(false, true)
+		end
+
+		if not vim.api.nvim_win_is_valid(M.result_winnr) then
+			-- create a new window
+			M.result_winnr = vim.api.nvim_open_win(M.result_bufnr, true, { split = "right", win = 0 })
 		end
 
 		M.exec_django_code(code)
 
+		-- syntax highlight the result buffer texts
 		tels_prevs_utils.highlighter(M.result_bufnr, "python")
 	end)
 end

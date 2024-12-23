@@ -1,4 +1,7 @@
 # nvim-django-shell
+## Features
+- **Django Commands:** Easily list, view help, and see examples for Django commands directly in a Telescope prompt.
+- **Django Shell:** Execute Django code and view the results in a new vertical buffer for better readability and debugging.
 
 ## Install
 If you are using Lazy nvim
@@ -8,10 +11,36 @@ If you are using Lazy nvim
 	opts = {},
 	dependencies = { 
 		"nvim-telescope/telescope.nvim",
-		"nvim-lua/plenary.nvim",
 	}
 }
 ```
+
+## Usage
+> **Assumptions:** 
+> - Python virtual environment set up in the current working directory and it is named `.venv`.
+> - Ensure your `manage.py` file is in the current working directory or one level down.
+
+### Example Directory Structure
+```markdown
+project_root/
+├── **.venv/**
+├── app/
+│   ├── __init__.py
+│   ├── models.py
+│   ├── views.py
+│   ├── **manage.py**
+│   └── ...
+└── ...
+```
+
+### Keymaps
+Create a `.py` file for testing. write the code to be executed in that file and 
+
+- Run django code in the current buffer
+`<leader>tr`
+
+- Show django commands
+`<leader>tc`
 
 ## Development
 clone the repo
@@ -31,35 +60,21 @@ run current test file
 :PlenaryBustedFile %
 ```
 
-## Notes
-```shell
-# list all available commands
-python manage.py help --commands
-
-# info about a single command
-python manage.py help <command>
-python manage.py help migrate
-```
-
 ## Todo:
+- [] better error handling and notifiers
 ### Django Shell
 Run django code and return the result in a new vertical/horizontal buffer
-- [] fix: when buffer is closed, next execute does not make it visible
-- [x] fix: handle empty lines in code execs
-- [x] Get the code from the current buffer
-- [x] Execute the code in django
-	- [x] handle the windows path errors
-- [x] set a django project home var, for access to manage.py
-- [x] Put the result in a new buffer
-- [x] reuse the same buffer for subsequent queries and replace the contents
-- [x] syntax highlight the result
+- [] better python path discovery(different venv setup and etc) 
+- [] ability for users to input `python` and `manage.py` path
 - [] config var for customisability
+- [] create two temporary win and buf only for plugin usage (LOW) 
 
 ### Django Commands
 List, show help and examples for django commands in telescope prompt.
 - [x] Get the commands
 - [x] Send cmds to telescope and other telescope configs
-- [] Run the command(accept args) and return the resutl (LOW)
+- [x] Send the command to a terminal
+- [] Run the command, accept args and return the result (LOW)
 
 ## Plugin Structure
 ```
