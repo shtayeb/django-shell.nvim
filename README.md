@@ -8,7 +8,7 @@ If you are using Lazy nvim
 	opts = {},
 	dependencies = { 
 		"nvim-telescope/telescope.nvim",
-		"nvim-lua/plenary.nvim" 
+		"nvim-lua/plenary.nvim",
 	}
 }
 ```
@@ -45,7 +45,7 @@ python manage.py help migrate
 ### Django Shell
 Run django code and return the result in a new vertical/horizontal buffer
 - [] fix: when buffer is closed, next execute does not make it visible
-- [] set tests
+- [] fix: handle empty lines in code execs
 - [x] Get the code from the current buffer
 - [x] Execute the code in django
 	- [x] handle the windows path errors
@@ -57,8 +57,8 @@ Run django code and return the result in a new vertical/horizontal buffer
 
 ### Django Commands
 List, show help and examples for django commands in telescope prompt.
-- [] Get the commands
-- [] Send cmds to  telescope and other telescope configs
+- [x] Get the commands
+- [x] Send cmds to telescope and other telescope configs
 - [] Run the command and return the resutl (LOW)
 
 ## Plugin Structure

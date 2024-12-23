@@ -1,5 +1,7 @@
 local pickers = require("telescope.pickers")
 local finders = require("telescope.finders")
+local actions = require("telescope.actions")
+local action_state = require("telescope.actions.state")
 local config = require("telescope.config").values
 local previewers = require("telescope.previewers")
 local tels_prevs_utils = require("telescope.previewers.utils")
@@ -114,8 +116,30 @@ M.show_django_cmds = function(opts)
 					return { M.python_path, M.manage_py_path, "help", entry.value }
 				end,
 			}),
+			attach_mappings = function(prompt_bufnr)
+				actions.select_default:replace(function()
+					local selection = action_state.get_selected_entry()
+					local selected_command = string.format("%s %s %s", M.python_path, M.manage_py_path, selection.value)
+					actions.close(prompt_bufnr)
+
+					-- open a new terminal and put the command there
+					vim.cmd.vnew()
+					vim.cmd.term()
+					vim.cmd.wincmd("J")
+					vim.api.nvim_win_set_height(0, 10)
+
+					local job_id = vim.bo.channel
+					vim.fn.chansend(job_id, { selected_command })
+				end)
+				return true
+			end,
 		})
 		:find()
 end
 
+-- M.python_path = "/home/stayeb/Code/immap/rh/.venv/bin/python"
+-- M.manage_py_path = "/home/stayeb/Code/immap/rh/src/manage.py"
+--
+-- M.show_django_cmds()
+--
 return M
