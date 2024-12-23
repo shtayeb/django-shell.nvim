@@ -4,6 +4,9 @@ local config = require("telescope.config").values
 local previewers = require("telescope.previewers")
 local tels_prevs_utils = require("telescope.previewers.utils")
 
+local log = require("plenary.log"):new()
+log.level = "debug"
+
 local M = {}
 
 M.result_bufnr = -1
@@ -32,15 +35,21 @@ end
 
 M.manage_py_path = find_manage_py()
 
-M.exec_django_code = function(code)
-	local code_str = table.concat(code, ";")
+local function find_python_path()
 	local py_path = M.cwd .. "/.venv/bin/python"
 
 	if vim.fn.has("win32") == 1 then
 		py_path = M.cwd .. "/.venv/Scripts/python"
 	end
 
-	local cmd = { py_path, M.manage_py_path, "shell", "--command", code_str }
+	return py_path
+end
+
+M.python_path = find_python_path()
+
+M.exec_django_code = function(code)
+	local code_str = table.concat(code, ";")
+	local cmd = { M.python_path, M.manage_py_path, "shell", "--command", code_str }
 
 	vim.fn.jobstart(cmd, {
 		stdout_buffered = true,
@@ -86,25 +95,23 @@ end
 M.show_django_cmds = function(opts)
 	pickers
 		.new(opts, {
-			finder = finders.new_table({
-				results = {
-					{ name = "Yes", value = { 1, 2, 3 } },
-					{ name = "No", value = { -1, -2, -3 } },
-				},
+			finder = finders.new_async_job({
+				command_generator = function()
+					return { M.python_path, M.manage_py_path, "help", "--commands" }
+				end,
 				entry_maker = function(entry)
 					return {
 						value = entry,
-						display = entry.name,
-						ordinal = entry.name, -- is the sorting and filtering key
+						display = entry,
+						ordinal = entry, -- is the sorting and filtering key
 					}
 				end,
 			}),
 			sorter = config.generic_sorter(opts),
-			previewer = previewers.new_buffer_previewer({
+			previewer = previewers.new_termopen_previewer({
 				title = "Command Help",
-				define_preview = function(self, entry)
-					vim.api.nvim_buf_set_lines(self.state.bufnr, 0, 0, false, vim.split(vim.inspect(entry.value), "\n"))
-					tels_prevs_utils.highlighter(self.state.bufnr, "python")
+				get_command = function(entry, _)
+					return { M.python_path, M.manage_py_path, "help", entry.value }
 				end,
 			}),
 		})

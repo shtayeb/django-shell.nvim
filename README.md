@@ -31,6 +31,16 @@ run current test file
 :PlenaryBustedFile %
 ```
 
+## Notes
+```shell
+# list all available commands
+python manage.py help --commands
+
+# info about a single command
+python manage.py help <command>
+python manage.py help migrate
+```
+
 ## Todo:
 ### Django Shell
 Run django code and return the result in a new vertical/horizontal buffer
