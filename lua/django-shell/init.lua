@@ -50,7 +50,10 @@ end
 M.python_path = find_python_path()
 
 M.exec_django_code = function(code)
-	local code_str = table.concat(code, ";")
+	local code_cleaned = vim.tbl_filter(function(line)
+		return line ~= ""
+	end, code)
+	local code_str = table.concat(code_cleaned, ";")
 	local cmd = { M.python_path, M.manage_py_path, "shell", "--command", code_str }
 
 	vim.fn.jobstart(cmd, {
@@ -71,7 +74,6 @@ end
 function M.setup(opts)
 	opts = opts or {}
 
-	-- TODO: get the available django commands and display it in a telescope search prompt
 	vim.keymap.set("n", "<space>tc", function()
 		M.show_django_cmds()
 	end)

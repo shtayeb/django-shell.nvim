@@ -45,7 +45,7 @@ python manage.py help migrate
 ### Django Shell
 Run django code and return the result in a new vertical/horizontal buffer
 - [] fix: when buffer is closed, next execute does not make it visible
-- [] fix: handle empty lines in code execs
+- [x] fix: handle empty lines in code execs
 - [x] Get the code from the current buffer
 - [x] Execute the code in django
 	- [x] handle the windows path errors
@@ -59,7 +59,7 @@ Run django code and return the result in a new vertical/horizontal buffer
 List, show help and examples for django commands in telescope prompt.
 - [x] Get the commands
 - [x] Send cmds to telescope and other telescope configs
-- [] Run the command and return the resutl (LOW)
+- [] Run the command(accept args) and return the resutl (LOW)
 
 ## Plugin Structure
 ```
