@@ -34,7 +34,13 @@ M.manage_py_path = find_manage_py()
 
 M.exec_django_code = function(code)
 	local code_str = table.concat(code, ";")
-	local cmd = { M.cwd .. "/.venv/Scripts/python", M.manage_py_path, "shell", "--command", code_str }
+	local py_path = M.cwd .. "/.venv/bin/python"
+
+	if vim.fn.has("win32") == 1 then
+		py_path = M.cwd .. "/.venv/Scripts/python"
+	end
+
+	local cmd = { py_path, M.manage_py_path, "shell", "--command", code_str }
 
 	vim.fn.jobstart(cmd, {
 		stdout_buffered = true,
