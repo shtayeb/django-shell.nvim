@@ -57,6 +57,10 @@ M.exec_django_code = function()
 		stdout_buffered = true,
 		on_stdout = function(_, data)
 			if data then
+				-- get a timestamp in the format HH:MM:SS AM/PM
+				local timestamp = "######### " .. os.date("%I:%M:%S %p") .. " #########"
+				table.insert(data, 1, timestamp)
+
 				vim.api.nvim_buf_set_lines(M.result_bufnr, 0, 0, false, data)
 			end
 		end,
