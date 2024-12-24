@@ -5,55 +5,49 @@ local action_state = require("telescope.actions.state")
 local config = require("telescope.config").values
 local previewers = require("telescope.previewers")
 local tels_prevs_utils = require("telescope.previewers.utils")
+local utils = require("django-shell.utils")
 
 local log = require("plenary.log"):new()
 log.level = "debug"
 
 local M = {}
+
 M.result_winnr = -1
 M.result_bufnr = -1
-M.cwd = vim.fn.getcwd()
+M.python_path = utils.find_python_path()
+M.manage_py_path = utils.find_manage_py()
 
-local function find_manage_py()
-	-- Check if manage.py exists in the current directory
-	local manage_py_in_cwd = M.cwd .. "/manage.py"
-	if vim.fn.filereadable(manage_py_in_cwd) == 1 then
-		return manage_py_in_cwd
-	end
+function M.setup(opts)
+	opts = opts or {}
 
-	-- Check for manage.py one level down
-	local subdirs = vim.fn.glob(M.cwd .. "/*", true, true) -- List all files and directories in cwd
-	for _, subdir in ipairs(subdirs) do
-		if vim.fn.isdirectory(subdir) == 1 then
-			local manage_py_in_subdir = subdir .. "/manage.py"
-			if vim.fn.filereadable(manage_py_in_subdir) == 1 then
-				return manage_py_in_subdir
-			end
-		end
-	end
+	vim.keymap.set("n", "<space>tc", function()
+		M.show_django_cmds()
+	end)
 
-	return nil
+	vim.keymap.set("n", "<space>tr", function()
+		M.exec_django_code()
+	end)
 end
 
-M.manage_py_path = find_manage_py()
+M.exec_django_code = function()
+	-- the all text in the current buffer till the cursor position
+	local curr_buf = vim.api.nvim_get_current_buf()
+	local cursor_position = vim.api.nvim_win_get_cursor(0) -- 0 -> current window
 
-local function find_python_path()
-	local py_path = M.cwd .. "/.venv/bin/python"
+	local code = vim.api.nvim_buf_get_lines(curr_buf, 0, cursor_position[1], false)
 
-	if vim.fn.has("win32") == 1 then
-		py_path = M.cwd .. "/.venv/Scripts/python"
+	if not vim.api.nvim_buf_is_valid(M.result_bufnr) then
+		M.result_bufnr = vim.api.nvim_create_buf(false, true)
 	end
 
-	return py_path
-end
+	if not vim.api.nvim_win_is_valid(M.result_winnr) then
+		-- create a new window
+		M.result_winnr = vim.api.nvim_open_win(M.result_bufnr, true, { split = "right", win = 0 })
+	end
 
-M.python_path = find_python_path()
+	-- the replacement handles empty lines
+	local code_str = table.concat(code, ";"):gsub(";;", ";")
 
-M.exec_django_code = function(code)
-	local code_cleaned = vim.tbl_filter(function(line)
-		return line ~= ""
-	end, code)
-	local code_str = table.concat(code_cleaned, ";")
 	local cmd = { M.python_path, M.manage_py_path, "shell", "--command", code_str }
 
 	vim.fn.jobstart(cmd, {
@@ -69,36 +63,9 @@ M.exec_django_code = function(code)
 			end
 		end,
 	})
-end
 
-function M.setup(opts)
-	opts = opts or {}
-
-	vim.keymap.set("n", "<space>tc", function()
-		M.show_django_cmds()
-	end)
-
-	vim.keymap.set("n", "<space>tr", function()
-		-- the all text in the current buffer till the cursor position
-		local curr_buf = vim.api.nvim_get_current_buf()
-		local cursor_position = vim.api.nvim_win_get_cursor(0) -- 0 -> current window
-
-		local code = vim.api.nvim_buf_get_lines(curr_buf, 0, cursor_position[1], false)
-
-		if not vim.api.nvim_buf_is_valid(M.result_bufnr) then
-			M.result_bufnr = vim.api.nvim_create_buf(false, true)
-		end
-
-		if not vim.api.nvim_win_is_valid(M.result_winnr) then
-			-- create a new window
-			M.result_winnr = vim.api.nvim_open_win(M.result_bufnr, true, { split = "right", win = 0 })
-		end
-
-		M.exec_django_code(code)
-
-		-- syntax highlight the result buffer texts
-		tels_prevs_utils.highlighter(M.result_bufnr, "python")
-	end)
+	-- syntax highlight the result buffer texts
+	tels_prevs_utils.highlighter(M.result_bufnr, "python")
 end
 
 M.show_django_cmds = function(opts)

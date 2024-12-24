@@ -65,6 +65,8 @@ run current test file
 - [] better error handling and notifiers
 ### Django Shell
 Run django code and return the result in a new vertical/horizontal buffer
+- [] add timestamp for each query
+- [] config var to display the sql query as well
 - [] better python path discovery(different venv setup and etc) 
 - [] ability for users to input `python` and `manage.py` path
 - [] config var for customisability
