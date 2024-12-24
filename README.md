@@ -63,8 +63,12 @@ run current test file
 
 ## Todo:
 - [] better error handling and notifiers
+- [] create user command for shell and django commands
 ### Django Shell
 Run django code and return the result in a new vertical/horizontal buffer
+- [x] default import for frequently used imports
+- [] args to switch to shell_plus
+- [] get highlighted code and run it
 - [] add timestamp for each query
 - [] config var to display the sql query as well
 - [] better python path discovery(different venv setup and etc) 

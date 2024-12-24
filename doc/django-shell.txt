@@ -3,4 +3,15 @@
 
 Django shell and commands helper for neovim.
 
+
+Default imported modules 
+```
+from django.db.models import Avg, Case, Count, F, Max, Min, Prefetch, Q, Sum, When,
+from django.conf import settings,
+from django.urls import reverse,
+from django.core.cache import cache,
+from django.db import transaction,
+from django.db.models import Exists, OuterRef, Subquery,
+````
+
  vim:tw=78:ts=8:ft=help:norl:

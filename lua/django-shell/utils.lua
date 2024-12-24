@@ -4,6 +4,15 @@ utils.iswin = vim.loop.os_uname().sysname == "Windows_NT"
 
 utils.cwd = vim.fn.getcwd()
 
+utils.default_imports = {
+	"from django.db.models import Avg, Case, Count, F, Max, Min, Prefetch, Q, Sum, When",
+	"from django.conf import settings",
+	"from django.urls import reverse",
+	"from django.core.cache import cache",
+	"from django.db import transaction",
+	"from django.db.models import Exists, OuterRef, Subquery",
+}
+
 utils.find_python_path = function()
 	local py_path = utils.cwd .. "/.venv/bin/python"
 
