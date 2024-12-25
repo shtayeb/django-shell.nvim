@@ -67,6 +67,7 @@ run current test file
 ## Todo:
 - [x] better error handling and notifiers
 - [x] create user command for shell and django commands
+
 **Django Shell**
 Run django code and return the result in a new vertical/horizontal buffer
 - [x] default import for frequently used imports
