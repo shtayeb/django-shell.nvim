@@ -3,6 +3,12 @@
 - **Django Commands:** Easily list, view help, and see examples for Django commands directly in a Telescope prompt.
 - **Django Shell:** Execute Django code and view the results in a new vertical buffer for better readability and debugging.
 
+
+
+https://github.com/user-attachments/assets/f50e4c30-04b7-40ad-b532-abc1753e932d
+
+
+
 ## Install
 If you are using Lazy nvim
 ```lua
