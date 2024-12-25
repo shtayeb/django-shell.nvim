@@ -29,7 +29,12 @@ function M.setup(opts)
 	end)
 end
 
-M.exec_django_code = function()
+M.exec_django_code = function(args)
+	if not M.python_path or not M.manage_py_path then
+		vim.notify("Not a django project or project setup is incompatible. Please read the readme.", "error")
+		return
+	end
+
 	-- the all text in the current buffer till the cursor position
 	local curr_buf = vim.api.nvim_get_current_buf()
 	local cursor_position = vim.api.nvim_win_get_cursor(0) -- 0 -> current window
@@ -76,6 +81,11 @@ M.exec_django_code = function()
 end
 
 M.show_django_cmds = function(opts)
+	if not M.python_path or not M.manage_py_path then
+		vim.notify("Not a django project or project setup is incompatible. Please read the readme.", "error")
+		return
+	end
+
 	pickers
 		.new(opts, {
 			finder = finders.new_async_job({
