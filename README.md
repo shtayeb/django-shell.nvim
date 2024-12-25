@@ -67,7 +67,7 @@ run current test file
 ## Todo:
 - [x] better error handling and notifiers
 - [x] create user command for shell and django commands
-### Django Shell
+**Django Shell**
 Run django code and return the result in a new vertical/horizontal buffer
 - [x] default import for frequently used imports
 - [] args to switch to shell_plus
@@ -79,7 +79,7 @@ Run django code and return the result in a new vertical/horizontal buffer
 - [] config var for customisability
 - [] create two temporary win and buf only for plugin usage (LOW) 
 
-### Django Commands
+**Django Commands**
 List, show help and examples for django commands in telescope prompt.
 - [x] Get the commands
 - [x] Send cmds to telescope and other telescope configs
