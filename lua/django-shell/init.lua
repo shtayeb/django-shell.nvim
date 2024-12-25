@@ -29,7 +29,7 @@ function M.setup(opts)
    end)
 end
 
-M.exec_django_code = function(args)
+M.exec_django_code = function()
    if not M.python_path or not M.manage_py_path then
       vim.notify("Not a django project or project setup is incompatible. Please read the readme.", "error")
       return
@@ -47,12 +47,12 @@ M.exec_django_code = function(args)
 
    if not vim.api.nvim_win_is_valid(M.result_winnr) then
       -- create a new window
-      M.result_winnr = vim.api.nvim_open_win(M.result_bufnr, true, { split = "right", win = 0 })
+      M.result_winnr = vim.api.nvim_open_win(M.result_bufnr, false, { split = "right", win = 0 })
    end
 
    -- the replacement handles empty lines
    local default_imports_str = table.concat(utils.default_imports, ";")
-   local code_str = table.concat(code, ";"):gsub(";;", ";")
+   local code_str = table.concat(code, ";"):gsub(";;+", ";")
 
    local final_code = default_imports_str .. ";" .. code_str
 
@@ -65,13 +65,12 @@ M.exec_django_code = function(args)
             -- get a timestamp in the format HH:MM:SS AM/PM
             local timestamp = "######### " .. os.date("%I:%M:%S %p") .. " #########"
             table.insert(data, 1, timestamp)
-
-            vim.api.nvim_buf_set_lines(M.result_bufnr, 0, 0, false, data)
+            vim.api.nvim_buf_set_lines(M.result_bufnr, -1, -1, false, data)
          end
       end,
       on_stderr = function(_, data)
          if data then
-            vim.api.nvim_buf_set_lines(M.result_bufnr, 0, 0, false, data)
+            vim.api.nvim_buf_set_lines(M.result_bufnr, -1, -1, false, data)
          end
       end,
    })
