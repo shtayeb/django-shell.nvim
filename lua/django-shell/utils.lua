@@ -1,5 +1,26 @@
 local utils = {}
 
+utils.pprint_queryset = function(shell_output)
+   local pprinted_res = {}
+
+   for _, value in pairs(shell_output) do
+      local x, y = string.find(value, "<QuerySet ")
+
+      if x and y then
+         table.insert(pprinted_res, string.sub(value, 1, y + 2))
+
+         local splited_qset_ob = vim.split(string.sub(value, y + 2), ",")
+         for _, qset_obj in pairs(splited_qset_ob) do
+            table.insert(pprinted_res, "    " .. vim.trim(qset_obj))
+         end
+      else
+         table.insert(pprinted_res, value)
+      end
+   end
+
+   return pprinted_res
+end
+
 utils.iswin = vim.loop.os_uname().sysname == "Windows_NT"
 
 utils.cwd = vim.fn.getcwd()

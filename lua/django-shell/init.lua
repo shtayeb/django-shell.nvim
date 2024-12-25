@@ -47,6 +47,7 @@ M.exec_django_code = function()
 
    if not vim.api.nvim_win_is_valid(M.result_winnr) then
       -- create a new window
+      -- split: Split direction: "left", "right", "above", "below".
       M.result_winnr = vim.api.nvim_open_win(M.result_bufnr, false, { split = "right", win = 0 })
    end
 
@@ -62,10 +63,13 @@ M.exec_django_code = function()
       stdout_buffered = true,
       on_stdout = function(_, data)
          if data then
+            local pp_output = utils.pprint_queryset(data)
+
             -- get a timestamp in the format HH:MM:SS AM/PM
             local timestamp = "######### " .. os.date("%I:%M:%S %p") .. " #########"
-            table.insert(data, 1, timestamp)
-            vim.api.nvim_buf_set_lines(M.result_bufnr, -1, -1, false, data)
+            table.insert(pp_output, 1, timestamp)
+
+            vim.api.nvim_buf_set_lines(M.result_bufnr, -1, -1, false, pp_output)
          end
       end,
       on_stderr = function(_, data)
