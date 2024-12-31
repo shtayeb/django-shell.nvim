@@ -35,10 +35,24 @@ utils.default_imports = {
 }
 
 utils.find_python_path = function()
-   local py_path = utils.cwd .. "/.venv/bin/python"
+   local default_py_path = "python"
+   local venv_path = ""
+   local common_venv_dirs = { ".venv", "venv" }
 
-   if utils.iswin then
-      py_path = utils.cwd .. "/.venv/Scripts/python"
+   -- check if one of these dirs exists upward or current from the getcwd()
+   for _, dir in pairs(common_venv_dirs) do
+      local dir_path = vim.fn.finddir(dir, ";")
+
+      if dir_path ~= "" then
+         venv_path = dir_path
+         break
+      end
+   end
+
+   local py_path = vim.fn.findfile("python", venv_path .. "/**")
+
+   if py_path == "" then
+      return default_py_path
    end
 
    return py_path
@@ -46,23 +60,19 @@ end
 
 utils.find_manage_py = function()
    -- Check if manage.py exists in the current directory
-   local manage_py_in_cwd = utils.cwd .. "/manage.py"
-   if vim.fn.filereadable(manage_py_in_cwd) == 1 then
-      return manage_py_in_cwd
+   local manage_py = vim.fn.findfile("manage.py", "**2")
+
+   if manage_py == "" then
+      return nil
    end
 
-   -- Check for manage.py one level down
-   local subdirs = vim.fn.glob(utils.cwd .. "/*", true, true) -- List all files and directories in cwd
-   for _, subdir in ipairs(subdirs) do
-      if vim.fn.isdirectory(subdir) == 1 then
-         local manage_py_in_subdir = subdir .. "/manage.py"
-         if vim.fn.filereadable(manage_py_in_subdir) == 1 then
-            return manage_py_in_subdir
-         end
-      end
+   -- check if manage_py is readable -> 0|1
+   if vim.fn.filereadable(manage_py) == 0 then
+      -- file is not readable
+      return nil
    end
 
-   return nil
+   return manage_py
 end
 
 return utils
