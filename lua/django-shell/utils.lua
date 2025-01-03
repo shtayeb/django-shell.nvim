@@ -14,26 +14,23 @@ utils.iswin = vim.loop.os_uname().sysname == "Windows_NT"
 
 utils.find_python_path = function()
    local default_py_path = "python"
-   local venv_path = ""
    local common_venv_dirs = { ".venv", "venv" }
 
-   -- check if one of these dirs exists upward or current from the getcwd()
+   -- Find the virtual environment directory
+   local venv_path = ""
+
    for _, dir in pairs(common_venv_dirs) do
       local dir_path = vim.fn.finddir(dir, utils.cwd .. ";")
-
       if dir_path ~= "" then
          venv_path = dir_path
          break
       end
    end
 
-   local py_path = ""
+   -- Determine the python executable path
+   local py_executable = utils.iswin and "python.exe" or "python"
 
-   if utils.iswin then
-      py_path = vim.fn.findfile("python.exe", venv_path .. "/**1")
-   else
-      py_path = vim.fn.findfile("python", venv_path .. "/**1")
-   end
+   local py_path = vim.fn.findfile(py_executable, venv_path .. "/**1")
 
    if py_path == "" then
       return default_py_path
