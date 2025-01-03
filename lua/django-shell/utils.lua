@@ -1,30 +1,5 @@
 local utils = {}
 
-utils.pprint_queryset = function(shell_output)
-   local pprinted_res = {}
-
-   for _, value in pairs(shell_output) do
-      local x, y = string.find(value, "<QuerySet ")
-
-      if x and y then
-         table.insert(pprinted_res, string.sub(value, 1, y + 2))
-
-         local splited_qset_ob = vim.split(string.sub(value, y + 2), ",")
-         for _, qset_obj in pairs(splited_qset_ob) do
-            table.insert(pprinted_res, "    " .. vim.trim(qset_obj))
-         end
-      else
-         table.insert(pprinted_res, value)
-      end
-   end
-
-   return pprinted_res
-end
-
-utils.iswin = vim.loop.os_uname().sysname == "Windows_NT"
-
-utils.cwd = vim.fn.getcwd()
-
 utils.default_imports = {
    "from django.db.models import Avg, Case, Count, F, Max, Min, Prefetch, Q, Sum, When",
    "from django.conf import settings",
@@ -34,6 +9,9 @@ utils.default_imports = {
    "from django.db.models import Exists, OuterRef, Subquery",
 }
 
+utils.cwd = vim.fn.getcwd()
+utils.iswin = vim.loop.os_uname().sysname == "Windows_NT"
+
 utils.find_python_path = function()
    local default_py_path = "python"
    local venv_path = ""
@@ -41,7 +19,7 @@ utils.find_python_path = function()
 
    -- check if one of these dirs exists upward or current from the getcwd()
    for _, dir in pairs(common_venv_dirs) do
-      local dir_path = vim.fn.finddir(dir, ";")
+      local dir_path = vim.fn.finddir(dir, utils.cwd .. ";")
 
       if dir_path ~= "" then
          venv_path = dir_path
@@ -49,7 +27,13 @@ utils.find_python_path = function()
       end
    end
 
-   local py_path = vim.fn.findfile("python", venv_path .. "/**")
+   local py_path = ""
+
+   if utils.iswin then
+      py_path = vim.fn.findfile("python.exe", venv_path .. "/**1")
+   else
+      py_path = vim.fn.findfile("python", venv_path .. "/**1")
+   end
 
    if py_path == "" then
       return default_py_path
@@ -73,6 +57,27 @@ utils.find_manage_py = function()
    end
 
    return manage_py
+end
+
+utils.pprint_queryset = function(shell_output)
+   local pprinted_res = {}
+
+   for _, value in pairs(shell_output) do
+      local x, y = string.find(value, "<QuerySet ")
+
+      if x and y then
+         table.insert(pprinted_res, string.sub(value, 1, y + 2))
+
+         local splited_qset_ob = vim.split(string.sub(value, y + 2), ",")
+         for _, qset_obj in pairs(splited_qset_ob) do
+            table.insert(pprinted_res, "    " .. vim.trim(qset_obj))
+         end
+      else
+         table.insert(pprinted_res, value)
+      end
+   end
+
+   return pprinted_res
 end
 
 return utils
