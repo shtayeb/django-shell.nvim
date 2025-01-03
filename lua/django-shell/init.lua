@@ -52,10 +52,10 @@ M.exec_django_code = function()
    end
 
    -- the replacement handles empty lines
-   local default_imports_str = table.concat(utils.default_imports, ";")
-   local code_str = table.concat(code, ";"):gsub(";;+", ";")
+   local default_imports_str = table.concat(utils.default_imports, "\n")
+   local code_str = table.concat(code, "\n")
 
-   local final_code = default_imports_str .. ";" .. code_str
+   local final_code = default_imports_str .. "\n" .. code_str
 
    local cmd = { M.python_path, M.manage_py_path, "shell", "--command", final_code }
 
