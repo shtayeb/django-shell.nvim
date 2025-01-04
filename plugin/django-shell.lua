@@ -6,6 +6,10 @@ vim.api.nvim_create_user_command("DjangoShellExec", function()
    require("django-shell").exec_django_code()
 end, {})
 
+vim.api.nvim_create_user_command("DjangoShellReset", function()
+   require("django-shell.utils").reset_projects_data()
+end, {})
+
 -- vim.api.nvim_create_autocmd("FileType", {
 --    pattern = "python",
 --    callback = function()
