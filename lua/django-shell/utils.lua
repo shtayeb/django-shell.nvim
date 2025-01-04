@@ -14,7 +14,7 @@ utils.iswin = vim.loop.os_uname().sysname == "Windows_NT"
 
 utils.find_python_path = function()
    local default_py_path = "python"
-   local common_venv_dirs = { ".venv", "venv" }
+   local common_venv_dirs = { ".venv", "venv", "env" }
 
    -- Find the virtual environment directory
    local venv_path = ""
