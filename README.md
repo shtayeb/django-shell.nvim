@@ -1,8 +1,24 @@
-# nvim-django-shell
-Seamless integration with Django commands and shell within Neovim. This plugin leverages the power of Telescope to offer an intuitive interface for executing Django commands and running Django shell code directly from your Neovim editor.
+<!-- LOGO -->
+<h1>
+<p align="center">
+  <!-- <img src="https://github.com/user-attachments/assets/fe853809-ba8b-400b-83ab-a9a0da25be8a" alt="Logo" width="128"> -->
+  <br>nvim-django-shell
+</h1>
+  <p align="center">
+    Seamless integration with Django commands and Shell within Neovim
+    <br />
+    <a href="#about">About</a>
+    ·
+    <a href="#development">Developing</a>
+  </p>
+</p>
+
 
 > [!IMPORTANT]
 > WIP
+
+## About
+Seamless integration with Django commands and shell within Neovim. This plugin leverages the power of Telescope to offer an intuitive interface for executing Django commands and running Django shell code directly from your Neovim editor.
 
 ## Features
 - **Django Commands**
