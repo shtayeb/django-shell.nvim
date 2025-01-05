@@ -27,6 +27,19 @@ function M.setup(opts)
 end
 
 M.exec_django_code = function()
+   if not M.python_path or not M.manage_py_path then
+      local python_path, manage_py_path = utils.get_project_paths()
+
+      if not python_path or not manage_py_path then
+         vim.notify("Not a django project or project setup is incompatible. Please read the readme.", "error")
+
+         return
+      else
+         M.python_path = python_path
+         M.manage_py_path = manage_py_path
+      end
+   end
+
    -- the all text in the current buffer till the cursor position
    local curr_buf = vim.api.nvim_get_current_buf()
    local cursor_position = vim.api.nvim_win_get_cursor(0) -- 0 -> current window
@@ -48,20 +61,6 @@ M.exec_django_code = function()
    local code_str = table.concat(code, "\n")
 
    local final_code = default_imports_str .. "\n" .. code_str
-
-   if not M.python_path then
-      M.python_path = utils.find_python_path()
-   end
-
-   if not M.manage_py_path then
-      M.manage_py_path = utils.find_manage_py()
-   end
-
-   if not M.python_path or not M.manage_py_path then
-      vim.notify("Not a django project or project setup is incompatible. Please read the readme.", "error")
-
-      return
-   end
 
    local cmd = { M.python_path, M.manage_py_path, "shell", "--command", final_code }
 
@@ -90,18 +89,17 @@ M.exec_django_code = function()
 end
 
 M.show_django_cmds = function(opts)
-   if not M.python_path then
-      M.python_path = utils.find_python_path()
-   end
-
-   if not M.manage_py_path then
-      M.manage_py_path = utils.find_manage_py()
-   end
-
    if not M.python_path or not M.manage_py_path then
-      vim.notify("Not a django project or project setup is incompatible. Please read the readme.", "error")
+      local python_path, manage_py_path = utils.get_project_paths()
 
-      return
+      if not python_path or not manage_py_path then
+         vim.notify("Not a django project or project setup is incompatible. Please read the readme.", "error")
+
+         return
+      else
+         M.python_path = python_path
+         M.manage_py_path = manage_py_path
+      end
    end
 
    pickers
