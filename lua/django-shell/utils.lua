@@ -77,15 +77,41 @@ end
 --
 local config_file = vim.fn.stdpath("data") .. "/django_shell_projects.json"
 
-utils.reset_projects_data = function()
-   local file = io.open(config_file, "w")
+utils.reset_project_data = function()
+   local projects = {}
+   local base_dir = utils.cwd
 
+   local file = io.open(config_file, "r")
    if not file then
       return
    end
 
-   file:write("{}")
+   local content = file:read("*a")
    file:close()
+
+   if content == "" then
+      return
+   end
+
+   local ok, decoded_content = pcall(vim.fn.json_decode, content)
+   if ok then
+      projects = decoded_content
+   end
+
+   -- remove the project info
+   projects[base_dir] = nil
+
+   -- Save back to the file
+   file = io.open(config_file, "w")
+
+   if file then
+      file:write(vim.fn.json_encode(projects))
+      file:close()
+
+      print("Paths for project '" .. base_dir .. "' has been reset successfully.")
+   else
+      print("Failed to reset project paths.")
+   end
 end
 
 utils.save_project_paths = function(base_dir, python_path, manage_py_path)
@@ -99,7 +125,12 @@ utils.save_project_paths = function(base_dir, python_path, manage_py_path)
 
       file:close()
 
-      projects = vim.fn.json_decode(content) or {}
+      if content ~= "" then
+         local ok, decoded_content = pcall(vim.fn.json_decode, content)
+         if ok then
+            projects = decoded_content
+         end
+      end
    end
 
    -- Update the project-specific paths
@@ -172,23 +203,20 @@ utils.get_project_paths = function()
    local base_dir = utils.cwd
 
    -- Attempt to load paths for this project
-   local python_path, manage_py_path = utils.load_project_paths(base_dir)
-
-   if not python_path then
-      python_path = utils.find_python_path()
+   local loaded_python_path, loaded_manage_py_path = utils.load_project_paths(base_dir)
+   if loaded_python_path or loaded_manage_py_path then
+      return loaded_python_path, loaded_manage_py_path
    end
 
-   if not manage_py_path then
-      manage_py_path = utils.find_manage_py()
-   end
+   local python_path = utils.find_python_path()
+   local manage_py_path = utils.find_manage_py()
 
-   -- If paths are not found, ask the user
    if not python_path or not manage_py_path then
+      -- paths are not found, ask the user
       python_path, manage_py_path = utils.ask_user_for_project_paths(base_dir)
-   end
-
-   if not python_path or not manage_py_path then
-      print("Paths for the project could not be set. Plugin functionality will be limited.")
+   else
+      -- paths found from auto detect - save them
+      utils.save_project_paths(base_dir, python_path, manage_py_path)
    end
 
    return python_path, manage_py_path

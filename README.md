@@ -50,7 +50,8 @@ Create a `.py` file for testing. write the code to be executed in that file and:
 
 ```lua
 vim.keymap.set("n", "<space>tc", "<cmd>DjangoCommands<CR>")
-vim.keymap.set("n", "<space>tc", "<cmd>DjangoShellExec<CR>")
+vim.keymap.set("n", "<space>tr", "<cmd>DjangoShellExec<CR>")
+vim.keymap.set("n", "<space>tx", "<cmd>DjangoShellReset<CR>")
 ```
 **Default Keymaps**
 - Run django code in the current buffer
@@ -82,7 +83,6 @@ run current test file
 **Django Shell**
 
 Run django code and return the result in a new vertical/horizontal buffer
-- [] ability for users to input `python` and `manage.py` path
 - [] better python path discovery(different venv setup and etc) 
 - [] config var for customisability
 	- [] config var to display the sql query as well
