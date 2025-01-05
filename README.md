@@ -84,7 +84,6 @@ run current test file
 **Django Shell**
 
 Run django code and return the result in a new vertical/horizontal buffer
-- [] better python path discovery(different venv setup and etc) 
 - [] config var for customisability
 	- [] config var to display the sql query as well
 	- [] args to switch to shell_plus

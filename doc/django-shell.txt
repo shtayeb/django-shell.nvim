@@ -3,6 +3,12 @@
 
 Django shell and commands helper for neovim.
 
+===============================================================================
+COMMANDS                                                       *nvim-django-shell-commands*
+
+- `:DjangoCommands` - List Django commands in a Telescope prompt.
+- `:DjangoShellExec` - Execute Django code in the current buffer.
+- `:DjangoShellReset` - Reset the project saved data.
 
 Default imported modules 
 ```
@@ -14,4 +20,4 @@ from django.db import transaction,
 from django.db.models import Exists, OuterRef, Subquery,
 ````
 
- vim:tw=78:ts=8:ft=help:norl:
+vim:tw=78:ts=8:ft=help:norl:
