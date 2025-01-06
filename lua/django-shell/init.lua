@@ -9,10 +9,12 @@ local utils = require("django-shell.utils")
 
 local M = {}
 
-M.result_winnr = -1
-M.result_bufnr = -1
-M.python_path = nil
-M.manage_py_path = nil
+local state = {
+   result_winnr = -1,
+   result_bufnr = -1,
+   python_path = nil,
+   manage_py_path = nil,
+}
 
 function M.setup(opts)
    opts = opts or {}
@@ -26,18 +28,28 @@ function M.setup(opts)
    end)
 end
 
+local function _load_project_paths_if_needed()
+   -- already loaded
+   if state.python_path and state.manage_py_path then
+      return true
+   end
+
+   local python_path, manage_py_path = utils.get_project_paths()
+   if not (python_path and manage_py_path) then
+      vim.notify("Something went wrong with the python and manage.py discovery", vim.log.levels.ERROR)
+      return false
+   end
+
+   state.python_path = python_path
+   state.manage_py_path = manage_py_path
+
+   return true
+end
+
 M.exec_django_code = function()
-   if not M.python_path or not M.manage_py_path then
-      local python_path, manage_py_path = utils.get_project_paths()
-
-      if not python_path or not manage_py_path then
-         vim.notify("Not a django project or project setup is incompatible. Please read the readme.", "error")
-
-         return
-      else
-         M.python_path = python_path
-         M.manage_py_path = manage_py_path
-      end
+   local ok = _load_project_paths_if_needed()
+   if not ok then
+      return
    end
 
    -- the all text in the current buffer till the cursor position
@@ -46,14 +58,14 @@ M.exec_django_code = function()
 
    local code = vim.api.nvim_buf_get_lines(curr_buf, 0, cursor_position[1], false)
 
-   if not vim.api.nvim_buf_is_valid(M.result_bufnr) then
-      M.result_bufnr = vim.api.nvim_create_buf(false, true)
+   if not vim.api.nvim_buf_is_valid(state.result_bufnr) then
+      state.result_bufnr = vim.api.nvim_create_buf(false, true)
    end
 
-   if not vim.api.nvim_win_is_valid(M.result_winnr) then
+   if not vim.api.nvim_win_is_valid(state.result_winnr) then
       -- create a new window
       -- split: Split direction: "left", "right", "above", "below".
-      M.result_winnr = vim.api.nvim_open_win(M.result_bufnr, false, { split = "right", win = 0 })
+      state.result_winnr = vim.api.nvim_open_win(state.result_bufnr, false, { split = "right", win = 0 })
    end
 
    -- the replacement handles empty lines
@@ -62,7 +74,7 @@ M.exec_django_code = function()
 
    local final_code = default_imports_str .. "\n" .. code_str
 
-   local cmd = { M.python_path, M.manage_py_path, "shell", "--command", final_code }
+   local cmd = { state.python_path, state.manage_py_path, "shell", "--command", final_code }
 
    vim.fn.jobstart(cmd, {
       stdout_buffered = true,
@@ -74,39 +86,31 @@ M.exec_django_code = function()
             local timestamp = "######### " .. os.date("%I:%M:%S %p") .. " #########"
             table.insert(pp_output, 1, timestamp)
 
-            vim.api.nvim_buf_set_lines(M.result_bufnr, -1, -1, false, pp_output)
+            vim.api.nvim_buf_set_lines(state.result_bufnr, -1, -1, false, pp_output)
          end
       end,
       on_stderr = function(_, data)
          if data then
-            vim.api.nvim_buf_set_lines(M.result_bufnr, -1, -1, false, data)
+            vim.api.nvim_buf_set_lines(state.result_bufnr, -1, -1, false, data)
          end
       end,
    })
 
    -- syntax highlight the result buffer texts
-   tels_prevs_utils.highlighter(M.result_bufnr, "python")
+   tels_prevs_utils.highlighter(state.result_bufnr, "python")
 end
 
 M.show_django_cmds = function(opts)
-   if not M.python_path or not M.manage_py_path then
-      local python_path, manage_py_path = utils.get_project_paths()
-
-      if not python_path or not manage_py_path then
-         vim.notify("Not a django project or project setup is incompatible. Please read the readme.", "error")
-
-         return
-      else
-         M.python_path = python_path
-         M.manage_py_path = manage_py_path
-      end
+   local ok = _load_project_paths_if_needed()
+   if not ok then
+      return
    end
 
    pickers
       .new(opts, {
          finder = finders.new_async_job({
             command_generator = function()
-               return { M.python_path, M.manage_py_path, "help", "--commands" }
+               return { state.python_path, state.manage_py_path, "help", "--commands" }
             end,
             entry_maker = function(entry)
                return {
@@ -120,13 +124,14 @@ M.show_django_cmds = function(opts)
          previewer = previewers.new_termopen_previewer({
             title = "Command Help",
             get_command = function(entry, _)
-               return { M.python_path, M.manage_py_path, "help", entry.value }
+               return { state.python_path, state.manage_py_path, "help", entry.value }
             end,
          }),
          attach_mappings = function(prompt_bufnr)
             actions.select_default:replace(function()
                local selection = action_state.get_selected_entry()
-               local selected_command = string.format("%s %s %s", M.python_path, M.manage_py_path, selection.value)
+               local selected_command =
+                  string.format("%s %s %s", state.python_path, state.manage_py_path, selection.value)
                actions.close(prompt_bufnr)
 
                -- open a new terminal and put the command there
@@ -144,8 +149,8 @@ M.show_django_cmds = function(opts)
       :find()
 end
 
--- M.python_path = "/home/stayeb/Code/immap/rh/.venv/bin/python"
--- M.manage_py_path = "/home/stayeb/Code/immap/rh/src/manage.py"
+-- state.python_path = "/home/stayeb/Code/immap/rh/.venv/bin/python"
+-- state.manage_py_path = "/home/stayeb/Code/immap/rh/src/manage.py"
 --
 -- M.show_django_cmds()
 --

@@ -31,6 +31,10 @@ utils.find_python_path = function()
 
    local py_path = vim.fn.findfile(py_executable, venv_path .. "/**1")
 
+   if py_path == "" then
+      vim.notify("No Python executable found in the virtual environment.", vim.log.levels.INFO)
+   end
+
    return py_path
 end
 
@@ -75,13 +79,13 @@ end
 --
 -- The project data
 --
-local config_file = vim.fn.stdpath("data") .. "/django_shell_projects.json"
+utils.config_file = vim.fn.stdpath("data") .. "/django_shell_projects.json"
 
 utils.reset_project_data = function()
    local projects = {}
    local base_dir = utils.cwd
 
-   local file = io.open(config_file, "r")
+   local file = io.open(utils.config_file, "r")
    if not file then
       return
    end
@@ -102,15 +106,15 @@ utils.reset_project_data = function()
    projects[base_dir] = nil
 
    -- Save back to the file
-   file = io.open(config_file, "w")
+   file = io.open(utils.config_file, "w")
 
    if file then
       file:write(vim.fn.json_encode(projects))
       file:close()
 
-      print("Paths for project '" .. base_dir .. "' has been reset successfully.")
+      vim.notify("Paths for project '" .. base_dir .. "' has been reset successfully.", vim.log.levels.INFO)
    else
-      print("Failed to reset project paths.")
+      vim.notify("Failed to reset project paths.", vim.log.levels.ERROR)
    end
 end
 
@@ -118,7 +122,7 @@ utils.save_project_paths = function(base_dir, python_path, manage_py_path)
    local projects = {}
 
    -- Load existing projects if the config file exists
-   local file = io.open(config_file, "r")
+   local file = io.open(utils.config_file, "r")
 
    if file then
       local content = file:read("*a")
@@ -140,20 +144,20 @@ utils.save_project_paths = function(base_dir, python_path, manage_py_path)
    }
 
    -- Save back to the file
-   file = io.open(config_file, "w")
+   file = io.open(utils.config_file, "w")
 
    if file then
       file:write(vim.fn.json_encode(projects))
       file:close()
 
-      print("Paths for project '" .. base_dir .. "' saved successfully.")
+      vim.notify("Paths for project '" .. base_dir .. "' saved successfully.", vim.log.levels.INFO)
    else
-      print("Failed to save project paths.")
+      vim.notify("Failed to save project paths.", vim.log.levels.ERROR)
    end
 end
 
 utils.load_project_paths = function(base_dir)
-   local file = io.open(config_file, "r")
+   local file = io.open(utils.config_file, "r")
 
    if file then
       local content = file:read("*a")
@@ -174,24 +178,24 @@ utils.load_project_paths = function(base_dir)
 end
 
 utils.ask_user_for_project_paths = function(base_dir)
-   print("Configuration not found for project: " .. base_dir)
+   vim.notify("Configuration not found for project enter them manually " .. base_dir, vim.log.levels.INFO)
 
    local python_path = vim.fn.input("Enter the venv python path: ")
    local manage_py_path = vim.fn.input("Enter the path to manage.py file: ")
 
    if python_path == "" or vim.fn.filereadable(python_path) == 0 then
       -- file is not readable
-      print("python is not readable")
+      vim.notify("python is not readable", vim.log.levels.ERROR)
 
-      return nil
+      return nil, nil
    end
 
    -- check if manage_py is readable -> 0|1
    if manage_py_path == "" or vim.fn.filereadable(manage_py_path) == 0 then
       -- file is not readable
-      print("manage.py is not readable")
+      vim.notify("manage.py is not readable", vim.log.levels.ERROR)
 
-      return nil
+      return nil, nil
    end
 
    utils.save_project_paths(base_dir, python_path, manage_py_path)
@@ -202,12 +206,13 @@ end
 utils.get_project_paths = function()
    local base_dir = utils.cwd
 
-   -- Attempt to load paths for this project
+   -- Attempt to load paths for this project from file
    local loaded_python_path, loaded_manage_py_path = utils.load_project_paths(base_dir)
    if loaded_python_path or loaded_manage_py_path then
       return loaded_python_path, loaded_manage_py_path
    end
 
+   -- not path in the config file -> auto discover them
    local python_path = utils.find_python_path()
    local manage_py_path = utils.find_manage_py()
 
