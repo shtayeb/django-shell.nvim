@@ -2,7 +2,7 @@
 <h1>
 <p align="center">
   <!-- <img src="https://github.com/user-attachments/assets/fe853809-ba8b-400b-83ab-a9a0da25be8a" alt="Logo" width="128"> -->
-  <br>nvim-django-shell
+  <br>django-shell
 </h1>
   <p align="center">
     Seamless integration with Django commands and Shell within Neovim
@@ -80,12 +80,12 @@ vim.keymap.set("n", "<space>tx", "<cmd>DjangoShellReset<CR>")
 ## Development
 clone the repo
 ```shell
-git clone https://github.com/shtayeb/nvim-django-shell.git
+git clone https://github.com/shtayeb/django-shell.nvim.git
 ```
 include the plugin locally using lazy.nvim
 ```lua
 {
-	dir = "path/to/nvim-django-shell",
+	dir = "path/to/django-shell.nvim",
 	opts = {},
 }
 ```

@@ -1,10 +1,10 @@
 ================================================================================
-                                                               *nvim-django-shell*
+                                                               *django-shell.nvim*
 
 Django shell and commands helper for neovim.
 
 ===============================================================================
-COMMANDS                                                       *nvim-django-shell-commands*
+COMMANDS                                                       *django-shell.nvim-commands*
 
 - `:DjangoCommands` - List Django commands in a Telescope prompt.
 - `:DjangoShellExec` - Execute Django code in the current buffer.
