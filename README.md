@@ -37,7 +37,7 @@ https://github.com/user-attachments/assets/f50e4c30-04b7-40ad-b532-abc1753e932d
 If you are using Lazy nvim
 ```lua
 {
-	"shtayeb/nvim-django-shell",
+	"shtayeb/django-shell.nvim",
 	opts = {},
 	dependencies = { "nvim-telescope/telescope.nvim" }
 }
