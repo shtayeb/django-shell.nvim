@@ -14,9 +14,6 @@
 </p>
 
 
-> [!IMPORTANT]
-> WIP
-
 ## About
 Seamless integration with Django commands and shell within Neovim. This plugin leverages the power of Telescope to offer an intuitive interface for executing Django commands and running Django shell code directly from your Neovim editor.
 
@@ -42,26 +39,6 @@ If you are using Lazy nvim
 	dependencies = { "nvim-telescope/telescope.nvim" }
 }
 ```
-
-## Usage
-> [!IMPORTANT]
-> **Assumptions:** 
-> - Python virtual environment set up in the current working directory and it is named `.venv`.
-> - Ensure your `manage.py` file is in the current working directory or one level down.
-
-### Example Directory Structure
-```markdown
-project_root/
-├── **.venv/**
-├── app/
-│   ├── __init__.py
-│   ├── models.py
-│   ├── views.py
-│   ├── **manage.py**
-│   └── ...
-└── ...
-```
-
 ### Keymaps
 Create a `.py` file for testing. write the code to be executed in that file and:
 
